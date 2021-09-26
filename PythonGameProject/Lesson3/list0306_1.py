@@ -22,6 +22,7 @@ DIR_RIGHT = 3
 ANIMATION = [0, 1, 0, 2]
 
 tmr = 0       # 타이머
+score = 0     # 점수
 
 pen_x = 90
 pen_y = 90
@@ -43,6 +44,13 @@ map_data = [
 ]
 
 
+# 그림자 포함 문자
+def draw_txt(txt, x, y, siz, col):
+    fnt = ("Times New Roman", siz, "bold")
+    canvas.create_text(x + 2, y + 2, text=txt, fill="black", font=fnt, tag="SCREEN")
+    canvas.create_text(x, y, text=txt, fill=col, font=fnt, tag="SCREEN")
+
+
 # 게임 화면 그리기
 def draw_screen():
     canvas.delete("SCREEN")
@@ -50,7 +58,7 @@ def draw_screen():
         for x in range(12):
             canvas.create_image(x * 60 + 30, y * 60 + 30, image=img_bg[map_data[y][x]], tag="SCREEN")
     canvas.create_image(pen_x, pen_y, image=img_pen[pen_a], tag="SCREEN")
-
+    draw_txt("SCORE " + str(score), 200, 30, 30, "white")
 
 # 각 방향에 벽 존재 여부 확인
 def check_wall(cx, cy, di, dot):
@@ -92,7 +100,7 @@ def check_wall(cx, cy, di, dot):
 
 # 펜펜 움직이기
 def move_penpen():
-    global pen_x, pen_y, pen_d, pen_a
+    global score, pen_x, pen_y, pen_d, pen_a
     if key == "Up":
         pen_d = DIR_UP
         if check_wall(pen_x, pen_y, pen_d, 20) == False:
@@ -110,6 +118,11 @@ def move_penpen():
         if check_wall(pen_x, pen_y, pen_d, 20) == False:
             pen_x = pen_x + 20
     pen_a = pen_d * 3 + ANIMATION[tmr % 4]
+    mx = int(pen_x / 60)
+    my = int(pen_y / 60)
+    if map_data[my][mx] == 3:    # 사탕에 닿았는가?
+        score = score + 100
+        map_data[my][mx] = 2
 
 # 메인 루프
 def main():
